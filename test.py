@@ -110,13 +110,15 @@ for fold in range(0, N_FOLDS):
         precision, recall, f_score, support = precision_recall_fscore_support(
             target_test,
             predicted_data_test,
-            zero_division=0
+            pos_label='h',
+            zero_division=0,
+            average='binary',
         )
 
         accuracy = accuracy_score(target_test, predicted_data_test)
 
         test_results_per_algorithm[algorithm_id].append({
-            "Presisi": precision,
+            "Precision": precision,
             "Recall": recall,
             "F1-Score": f_score,
             "Accuracy": accuracy,
@@ -124,7 +126,7 @@ for fold in range(0, N_FOLDS):
 
         test_results_per_fold.append({
             "Algoritma": ALGORITHM_LABELS[algorithm_id],
-            "Presisi": precision,
+            "Precision": precision,
             "Recall": recall,
             "F1-Score": f_score,
             "Accuracy": accuracy,
