@@ -1,8 +1,8 @@
 import joblib
 import matplotlib.pyplot as plt
 import pandas
-from sklearn.metrics import plot_confusion_matrix, precision_recall_fscore_support, plot_roc_curve, accuracy_score,\
-    plot_precision_recall_curve, classification_report
+from sklearn.metrics import plot_confusion_matrix, precision_recall_fscore_support, plot_roc_curve, accuracy_score, \
+    plot_precision_recall_curve
 
 from constants import *
 from train import get_model_file_name, get_test_file_name, get_vectorizer_file_name
@@ -152,8 +152,6 @@ for algorithm_id in plot_list:
             algorithm_id
         )
     )
-
-
 
 for algorithm_id, test_result in test_results_per_algorithm.items():
     data_frame = pandas.DataFrame(
