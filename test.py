@@ -1,7 +1,8 @@
 import joblib
 import matplotlib.pyplot as plt
 import pandas
-from sklearn.metrics import plot_confusion_matrix, precision_recall_fscore_support, plot_roc_curve, accuracy_score, plot_precision_recall_curve
+from sklearn.metrics import plot_confusion_matrix, precision_recall_fscore_support, plot_roc_curve, accuracy_score,\
+    plot_precision_recall_curve, classification_report
 
 from constants import *
 from train import get_model_file_name, get_test_file_name, get_vectorizer_file_name
@@ -73,6 +74,7 @@ for fold in range(0, N_FOLDS):
             target_test,
             labels=['f', 'h'],
             display_labels=['Fakta', 'Hoax'],
+            cmap='Greys'
         )
         plt.ylabel('Kelas Prediksi')
         plt.xlabel('Hasil Prediksi')
@@ -108,6 +110,7 @@ for fold in range(0, N_FOLDS):
         precision, recall, f_score, support = precision_recall_fscore_support(
             target_test,
             predicted_data_test,
+            zero_division=0
         )
 
         accuracy = accuracy_score(target_test, predicted_data_test)

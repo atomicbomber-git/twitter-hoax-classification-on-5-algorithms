@@ -3,10 +3,11 @@ import pandas
 from sklearn import svm
 from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, TfidfTransformer
 from sklearn.linear_model import Perceptron
 from sklearn.model_selection import KFold
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import Pipeline
 
 from constants import *
 
@@ -87,16 +88,42 @@ if __name__ == "__main__":
 
         data_train, target_train = data[train_index], target[train_index]
 
-        tfidf_vectorizer = TfidfVectorizer(
-            min_df=5,
-            max_df=0.7,
+        bow_pipeline = Pipeline([
+            ('count_vectorizer', CountVectorizer(min_df=5, max_df=0.7, )),
+            ('tf_idf_transformer', TfidfTransformer())
+        ]).fit(data_train)
+
+        pandas.DataFrame(
+            bow_pipeline['count_vectorizer'].transform(
+                data_train
+            ).todense(),
+            columns=bow_pipeline['count_vectorizer'].get_feature_names()
+        ).transpose(
+        ).to_excel(
+            "./report-extras/tf_data_train_fold_{}.xlsx".format(
+                fold_count
+            )
+        )
+        pandas.DataFrame(
+            bow_pipeline.transform(
+                data_train
+            ).todense(),
+            columns=bow_pipeline['count_vectorizer'].get_feature_names()
+        ).transpose(
+        ).to_excel(
+            "./report-extras/idf_data_train_fold_{}.xlsx".format(
+                fold_count
+            )
         )
 
-        processed_data_train = tfidf_vectorizer.fit_transform(
+        processed_data_train = bow_pipeline.transform(
             data_train
         ).toarray()
 
-        joblib.dump(tfidf_vectorizer, get_vectorizer_file_name(fold_count))
+        joblib.dump(
+            bow_pipeline,
+            get_vectorizer_file_name(fold_count)
+        )
 
         for key, algorithm in algorithms.items():
             algorithm["train"](processed_data_train, target_train, fold_count)
