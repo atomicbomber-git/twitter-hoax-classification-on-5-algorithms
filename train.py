@@ -8,6 +8,7 @@ from sklearn.linear_model import Perceptron
 from sklearn.model_selection import KFold
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
+import numpy as np
 
 from constants import *
 
@@ -94,21 +95,55 @@ if __name__ == "__main__":
         ]).fit(data_train)
 
         pandas.DataFrame(
-            bow_pipeline['count_vectorizer'].transform(
-                data_train
-            ).todense(),
-            columns=bow_pipeline['count_vectorizer'].get_feature_names()
+            bow_pipeline['count_vectorizer'].stop_words_
+        ).sort_values(
+            [0],
+            ignore_index=True
+        ).to_excel(
+            "./report-extras/effective_stop_words_{}.xlsx".format(
+                fold_count
+            )
+        )
+
+        pandas.DataFrame(
+            zip(
+                map(
+                    lambda x: x + 1,
+                    train_index,
+                ),
+                *np.array(
+                    bow_pipeline['count_vectorizer'].transform(
+                        data_train
+                    ).todense().T
+                )
+            ),
+            columns=[
+                'n',
+                *bow_pipeline['count_vectorizer'].get_feature_names(),
+            ]
         ).transpose(
         ).to_excel(
             "./report-extras/tf_data_train_fold_{}.xlsx".format(
                 fold_count
             )
         )
+
         pandas.DataFrame(
-            bow_pipeline.transform(
-                data_train
-            ).todense(),
-            columns=bow_pipeline['count_vectorizer'].get_feature_names()
+            zip(
+                map(
+                    lambda x: x + 1,
+                    train_index,
+                ),
+                *np.array(
+                    bow_pipeline.transform(
+                        data_train
+                    ).todense().T
+                )
+            ),
+            columns=[
+                'n',
+                *bow_pipeline['count_vectorizer'].get_feature_names(),
+            ]
         ).transpose(
         ).to_excel(
             "./report-extras/idf_data_train_fold_{}.xlsx".format(
