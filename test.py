@@ -74,13 +74,15 @@ for fold in range(0, N_FOLDS):
             target_test,
             labels=['f', 'h'],
             display_labels=['Fakta', 'Hoax'],
-            cmap='Greys'
+            cmap='Greys',
         )
+
         plt.ylabel('Kelas Prediksi')
         plt.xlabel('Hasil Prediksi')
-        plt.savefig("./images/CONFUSION_MATRIX_{}_FOLD_{}.png".format(
-            algorithm_id,
+
+        plt.savefig("./images/{}_{}_CONFUSION_MATRIX.png".format(
             fold,
+            algorithm_id,
         ))
         plt.clf()
         plt.close()

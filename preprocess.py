@@ -5,6 +5,7 @@ from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from nltk.corpus import stopwords
 
 from constants import *
+from util import chunks
 
 factory = StemmerFactory()
 stemmer = factory.create_stemmer()
@@ -12,32 +13,35 @@ stemmer = factory.create_stemmer()
 INPUT_FILE = "./tweets.csv"
 OUTPUT_FILE = "./output.csv"
 
+pandas.DataFrame(
+    stopwords_chunks
+).to_excel("stopwords.xlsx")
 
-def clean_text(input_text: str) -> str:
-    # Filtering, menghapus semua karakter non teks
+def filter(input_text: str) -> str:
     input_text = re.sub(r'\W', ' ', input_text)
-
-    # Menghapus semua karakter tunggal pada bagian tengah teks
     input_text = re.sub(r'\s+[a-zA-Z]\s+', ' ', input_text)
-
-    # Menghapus semua karakter tunggal pada awal teks
     input_text = re.sub(r'\^[a-zA-Z]\s+', ' ', input_text)
-
-    # Mengganti spasi berurutan dengan ' '
     input_text = re.sub(r'\s+', ' ', input_text, flags=re.I)
+    return input_text
 
-    # Case folding
-    input_text = input_text.lower()
+def case_fold(input_text: str) -> str:
+    return input_text.lower()
 
-    # Stemming
-    input_text = stemmer.stem(input_text)
+def stem(input_text: str) -> str:
+    return stemmer.stem(input_text)
 
-    # Split into tokens and remove stopwords
+def remove_stop_words(input_text: str) -> str:
     tokens = input_text.split(" ")
     cleaned_tokens = [token for token in tokens if token not in stopwords.words('indonesian')]
-    input_text = " ".join(cleaned_tokens)
+    return " ".join(cleaned_tokens)
 
+def clean_text(input_text: str) -> str:
+    input_text = filter(input_text)
+    input_text = case_fold(input_text)
+    input_text = stem(input_text)
+    input_text = remove_stop_words(input_text)
     return input_text
+
 
 
 def normalize_target(target_text: str) -> str:
@@ -54,6 +58,50 @@ input_data_frame = pandas.read_csv(
     header=None,
     skiprows=[0]
 )
+
+
+# Report preprocessing steps
+PREPORT_KEY_STEP = "Langkah"
+PREPORT_KEY_DESC = "Deskripsi"
+preprocessing_report = []
+
+report_text = input_data_frame[0][0]
+preprocessing_report.append({
+    PREPORT_KEY_STEP: "Teks Awal",
+    PREPORT_KEY_DESC: report_text
+})
+
+report_text = filter(report_text)
+preprocessing_report.append({
+    PREPORT_KEY_STEP: "Filter",
+    PREPORT_KEY_DESC: report_text
+})
+
+report_text = case_fold(report_text)
+preprocessing_report.append({
+    PREPORT_KEY_STEP: "Case Folding",
+    PREPORT_KEY_DESC: report_text
+})
+
+report_text = stem(report_text)
+preprocessing_report.append({
+    PREPORT_KEY_STEP: "Stemming",
+    PREPORT_KEY_DESC: report_text
+})
+
+report_text = remove_stop_words(report_text)
+preprocessing_report.append({
+    PREPORT_KEY_STEP: "Stop Words Removal",
+    PREPORT_KEY_DESC: report_text
+})
+
+pandas.DataFrame(
+    preprocessing_report
+).to_excel("preprocessing_report.xlsx")
+
+
+
+input_data_frame.to_excel("tweets.xlsx")
 
 input_data_frame[DATA_KEY] = input_data_frame[INPUT_DATA_INDEX].apply(
     clean_text

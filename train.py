@@ -1,5 +1,6 @@
 import joblib
 import pandas
+from collections import OrderedDict
 from sklearn import svm
 from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
@@ -61,14 +62,12 @@ def random_forest(data, target, fold):
 def get_vectorizer_file_name(fold):
     return "./vectorizer_data/vectorizer_{}.model".format(fold)
 
-
-algorithms = {
-    NAIVE_BAYES_ID: {"train": naive_bayes},
-    SVM_ID: {"train": support_vector_machine},
-    MULTILAYER_PERCEPTRON_ID: {"train": perceptron},
-    DECISION_TREE_ID: {"train": decision_tree},
-    RANDOM_FOREST_ID: {"train": random_forest},
-}
+algorithms = OrderedDict()
+algorithms[NAIVE_BAYES_ID] = {"train": naive_bayes},
+algorithms[SVM_ID] = {"train": support_vector_machine},
+algorithms[MULTILAYER_PERCEPTRON_ID] = {"train": perceptron},
+algorithms[DECISION_TREE_ID] = {"train": decision_tree},
+algorithms[RANDOM_FOREST_ID] = {"train": random_forest},
 
 if __name__ == "__main__":
     data_frame = pandas.read_csv(
@@ -160,7 +159,8 @@ if __name__ == "__main__":
             get_vectorizer_file_name(fold_count)
         )
 
-        for key, algorithm in algorithms.items():
+        for key, algorithm_content in algorithms.items():
+            algorithm = algorithm_content[0]
             algorithm["train"](processed_data_train, target_train, fold_count)
 
         test_data = data_frame.iloc[test_index]
