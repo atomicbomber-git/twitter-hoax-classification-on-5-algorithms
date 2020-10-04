@@ -121,7 +121,7 @@ for fold in range(0, N_FOLDS):
         accuracy = (tp + tn) / (tp + fp + tn + fn)
 
         print(
-            """Untuk fold ke-{}, algoritma {}, jumlah true negative (tn) = {}, false positive (tp) = {}, false negative (fn) = {}; Dan true positive (tp) = {}. Maka nilai precision = tp / (tp + fp) =  {} / ({} + {})= {}; Nilai recall = tp / (tp + fn) = {} / ({} + {}) = {}; F1-score = 2 x precision x recall / (precision + recall) = 2 x {} x {} / ({} + {}) = {}; Nilai accuracy = tp + tn / (tp + fp + tn + fn) = {} + {} / ({} + {} + {} + {}) = {}.\n
+            """Pada diagram dibawah, dapat dilihat bahwa untuk fold ke-{} pada algoritma {}, jumlah true negative (tn) = {:.2f}, false positive (tp) = {:.2f}, false negative (fn) = {:.2f}; Dan true positive (tp) = {:.2f}. Maka nilai precision = tp / (tp + fp) =  {:.2f} / ({:.2f} + {:.2f})= {:.2f}; Nilai recall = tp / (tp + fn) = {:.2f} / ({:.2f} + {:.2f}) = {:.2f}; F1-score = 2 x precision x recall / (precision + recall) = 2 x {:.2f} x {:.2f} / ({:.2f} + {:.2f}) = {:.2f}; Nilai accuracy = tp + tn / (tp + fp + tn + fn) = {:.2f} + {:.2f} / ({:.2f} + {:.2f} + {:.2f} + {:.2f}) = {:.2f}.\n
             """.format(
                 fold + 1, 
                 ALGORITHM_LABELS[algorithm_id],
@@ -134,7 +134,7 @@ for fold in range(0, N_FOLDS):
             ),
             file=report_calculation_file
         )
-
+        
         precision, recall, f_score, support = precision_recall_fscore_support(
             target_test,
             predicted_data_test,
@@ -163,6 +163,13 @@ for fold in range(0, N_FOLDS):
                 "Accuracy": accuracy,
             }
         )
+
+    print(
+        "Berikut merupakan tabel hasil pengujian untuk fold {}.\n".format(
+            fold + 1
+        ),
+        file=report_calculation_file
+    )
 
     pandas.DataFrame(
         test_results_per_fold,
