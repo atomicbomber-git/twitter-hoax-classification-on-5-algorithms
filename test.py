@@ -121,7 +121,7 @@ for fold in range(0, N_FOLDS):
         accuracy = (tp + tn) / (tp + fp + tn + fn)
 
         print(
-            """Pada diagram dibawah, dapat dilihat bahwa untuk fold ke-{} pada algoritma {}, jumlah true negative (tn) = {:.2f}, false positive (tp) = {:.2f}, false negative (fn) = {:.2f}; Dan true positive (tp) = {:.2f}. Maka nilai precision = tp / (tp + fp) =  {:.2f} / ({:.2f} + {:.2f})= {:.2f}; Nilai recall = tp / (tp + fn) = {:.2f} / ({:.2f} + {:.2f}) = {:.2f}; F1-score = 2 x precision x recall / (precision + recall) = 2 x {:.2f} x {:.2f} / ({:.2f} + {:.2f}) = {:.2f}; Nilai accuracy = tp + tn / (tp + fp + tn + fn) = {:.2f} + {:.2f} / ({:.2f} + {:.2f} + {:.2f} + {:.2f}) = {:.2f}.\n
+            """Pada diagram dibawah, dapat dilihat bahwa untuk fold ke-{} pada algoritma {}, jumlah true negative (tn) = {:.2f}, false positive (fp) = {:.2f}, false negative (fn) = {:.2f}; Dan true positive (tp) = {:.2f}. Maka nilai precision = tp / (tp + fp) =  {:.2f} / ({:.2f} + {:.2f})= {:.2f}; Nilai recall = tp / (tp + fn) = {:.2f} / ({:.2f} + {:.2f}) = {:.2f}; F1-score = 2 x precision x recall / (precision + recall) = 2 x {:.2f} x {:.2f} / ({:.2f} + {:.2f}) = {:.2f}; Nilai accuracy = tp + tn / (tp + fp + tn + fn) = {:.2f} + {:.2f} / ({:.2f} + {:.2f} + {:.2f} + {:.2f}) = {:.2f}.\n
             """.format(
                 fold + 1, 
                 ALGORITHM_LABELS[algorithm_id],
@@ -181,12 +181,18 @@ for algorithm_id in plot_list:
 
     prc_fig = plot_list[algorithm_id]["prc_fig"]
     prc_fig.savefig("./images/PPC_CURVE_{}.png".format(algorithm_id))
+    pass
+
+averages_list = []
 
 for algorithm_id, test_result in test_results_per_algorithm.items():
-    data_frame = pandas.DataFrame(test_result)
+    averages_list.append({
+        "Algorithm": ALGORITHM_LABELS[algorithm_id],
+        **pandas.DataFrame(test_result).mean().to_dict()
+    })
 
-    mean = data_frame.mean()
-
-    mean.to_excel(
-        get_test_result_file_name("Rata-Rata " + ALGORITHM_LABELS[algorithm_id])
-    )
+pandas.DataFrame(
+    averages_list
+).to_excel(
+    "./test_result_data/Rata-Rata Hasil Penelitian.xlsx"
+)
