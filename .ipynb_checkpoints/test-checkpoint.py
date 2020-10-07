@@ -203,7 +203,7 @@ report_average_df.set_index(
 )
 
 print(
-report_average_df.agg({
+    report_average_df.agg({
         'Precision': ['min', 'max'],
         'Recall': ['min', 'max'],
         'F1-Score': ['min', 'max'],

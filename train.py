@@ -80,6 +80,8 @@ if __name__ == "__main__":
     kFolder = KFold(n_splits=N_FOLDS)
     fold_count = 0
 
+    most_frequent_terms = []
+
     for train_index, test_index in kFolder.split(data):
         print("Memproses Tweet ke {} - {}".format(
             test_index[0] + 1,
@@ -103,6 +105,34 @@ if __name__ == "__main__":
                 fold_count
             )
         )
+
+        most_frequent_terms_in_this_fold = pandas.DataFrame(
+                bow_pipeline['count_vectorizer'].transform(
+                    data_train
+                ).todense(),
+                columns=bow_pipeline['count_vectorizer'].get_feature_names()
+            ).sum(
+            ).sort_values(
+                ascending=False
+            ).head(
+                20
+            ).to_dict(
+                OrderedDict
+            )
+
+        temp = []
+        for key, value in most_frequent_terms_in_this_fold.items():
+            temp.append(
+                "{} ({})".format(key, value)
+            )
+        temp = ", ".join(temp)
+
+        most_frequent_terms.append({
+            "Fold": fold_count + 1,
+            "Jumlah Term Awal": len(bow_pipeline['count_vectorizer'].vocabulary_) + len(bow_pipeline['count_vectorizer'].stop_words_),
+            "Jumlah Term": len(bow_pipeline['count_vectorizer'].get_feature_names()),
+            "Term dengan Frekuensi Tertinggi": temp,
+        })
 
         pandas.DataFrame(
             zip(
@@ -167,3 +197,7 @@ if __name__ == "__main__":
 
         test_data.to_csv(get_test_file_name(fold_count))
         fold_count += 1
+
+    pandas.DataFrame(
+        most_frequent_terms
+    ).to_excel("./report-extras/most-frequent-terms-per-fold.xlsx")

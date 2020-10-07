@@ -1,0 +1,6 @@
+Algoritma,Precision,Recall,F1-Score,Accuracy
+Naive Bayes,0.7914,1.0000,0.8771,0.7967
+Support Vector Machine,0.7885,1.0000,0.8754,0.7933
+Multilayer Perceptron,0.8156,0.8512,0.8143,0.7067
+Decision Tree,0.8213,0.8243,0.8138,0.7200
+Random Forest,0.8033,0.9062,0.8444,0.7533
